@@ -1,0 +1,63 @@
+variant: fcos
+version: 1.4.0
+passwd:
+  users:
+    - name: core
+
+      # Example Publich SSH key, if you need to create a new key you can do so using:
+      #   ssh-keygen -t ed25519 -C "yourname@homelab" -f ~/.ssh/id_ed25519
+      ssh_authorized_keys:
+        - ssh-rsa ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDuneWarrior2025IxMachineHomelabForAIArtExampleKey
+
+      # Example password generated with:
+      #   openssl passwd -6 "SuperSecret"
+      password_hash: $6$CjKW8dC9TBL4s.p3$jAQrTjSEdEp3bA7s5siEUwd/sFo9IBcvKU./8ILhuG/DCwh5P5OC1Z0DAemAF4ZoPBeBSmculUhnkAMtOHXqC0
+
+storage:
+  files:
+    - path: /etc/hostname
+      mode: 0644
+      contents:
+        # Replace `SuperCoolMachine` with your prefered machine name
+        inline: SuperCoolMachine
+  directories:
+    - path: /etc/ucore-autorebase
+      mode: 0754
+systemd:
+  units:
+    - name: ucore-unsigned-autorebase.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=uCore autorebase to unsigned OCI and reboot
+        ConditionPathExists=!/etc/ucore-autorebase/unverified
+        ConditionPathExists=!/etc/ucore-autorebase/signed
+        After=network-online.target
+        Wants=network-online.target
+        [Service]
+        Type=oneshot
+        StandardOutput=journal+console
+        ExecStart=/usr/bin/rpm-ostree rebase --bypass-driver ostree-unverified-registry:ghcr.io/ublue-os/ucore-hci:stable-nvidia
+        ExecStart=/usr/bin/touch /etc/ucore-autorebase/unverified
+        ExecStart=/usr/bin/systemctl disable ucore-unsigned-autorebase.service
+        ExecStart=/usr/bin/systemctl reboot
+        [Install]
+        WantedBy=multi-user.target
+    - name: ucore-signed-autorebase.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=uCore autorebase to signed OCI and reboot
+        ConditionPathExists=/etc/ucore-autorebase/unverified
+        ConditionPathExists=!/etc/ucore-autorebase/signed
+        After=network-online.target
+        Wants=network-online.target
+        [Service]
+        Type=oneshot
+        StandardOutput=journal+console
+        ExecStart=/usr/bin/rpm-ostree rebase --bypass-driver ostree-image-signed:docker://ghcr.io/ublue-os/ucore-hci:stable-nvidia
+        ExecStart=/usr/bin/touch /etc/ucore-autorebase/signed
+        ExecStart=/usr/bin/systemctl disable ucore-signed-autorebase.service
+        ExecStart=/usr/bin/systemctl reboot
+        [Install]
+        WantedBy=multi-user.target
