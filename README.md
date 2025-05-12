@@ -48,8 +48,8 @@ as well as serving it. Boot your homelab server into CoreOS, and then run this s
   \ --- /
 ```
 
-### Part 2 - 
+### Part 2 
 
-<hamsters are furuiously running in their wheels to get this article done, stay tuned!>
+NOTE: Going forward all new example files used in posts will be placed in the ./examples/ folder and all helper scripts will be placed in the ./scripts/ folder.
 
 
