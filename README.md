@@ -28,7 +28,7 @@ podman run -d --rm -v "$(pwd):/workdir:Z" -w /workdir -p 8000:8000 python:3-slim
 
 For more information please reference the [post for this section](https://medium.com/@codenomad/my-dune-inspired-ai-art-homelab-part-1-bad4efff07a7).
 
-# Automated Script
+#### Automated Script for uCore Setup
 
 The `create_ignition.sh` script is provided to help aid in setting up the ignition script
 as well as serving it. Boot your homelab server into CoreOS, and then run this script on a separate computer. The script will walk you through the basic butane configuration and give your the command to execute on your homelab system to install uCoreOS.
