@@ -46,4 +46,10 @@ as well as serving it. Boot your homelab server into CoreOS, and then run this s
  :  ===  :  #3: ucore (The Fremen's Path, default)
  :  ===  :  #4: ucore-hci (The Sardaukar's Might, for future VMs)
   \ --- /
-  ```
+```
+
+### Part 2 - 
+
+<hamsters are furuiously running in their wheels to get this article done, stay tuned!>
+
+
