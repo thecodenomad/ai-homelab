@@ -1,62 +1,95 @@
-FROM nvidia/cuda:12.9.0-runtime-ubuntu24.04
+FROM nvidia/cuda:12.8.1-base-ubuntu22.04
 
 # Set non-interactive frontend and timezone
 ENV DEBIAN_FRONTEND=noninteractive
-ENV TZ=UTC
 
-# Install prerequisites
+ARG TZ=UTC
+ENV TZ=$TZ
+
+########################
+# Dependencies Install #
+########################
+
 RUN apt-get update && apt-get install -y \
-    python3.12 \
-    python3.12-dev \
-    python3.12-distutils \
+    python3 \
+    python3-dev \
+    python3-venv \
+    gcc \
+    g++ \
     git \
+    libgl1 \
     libgl1-mesa-glx \
     libglib2.0-0 \
+    libssl-dev \
+    pkg-config \
+    sed \
     tzdata \
-    wget \
+    curl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Set Python 3.12 as default
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1 \
-    && update-alternatives --install /usr/bin/python python /usr/bin/python3.12 1
+#######################
+# Setup Non-Root User #
+#######################
 
-# Install pip
-RUN wget https://bootstrap.pypa.io/get-pip.py \
-    && python3.12 get-pip.py \
-    && rm get-pip.py \
-    && python3.12 -m pip install --upgrade pip
+# Create working directory and home directory for UID 1000
+RUN mkdir -p /app /home/1000 \
+    && chown 1000:1000 /app /home/1000
 
-# Install core Python dependencies
-RUN python3.12 -m pip install --no-cache-dir setuptools wheel
+# Set home directory for UID 1000
+ENV HOME=/home/1000
+
+# Switch to non-root user (UID 1000)
+USER 1000
+
+############################################
+# Setup Rust Dependencies for Transformers #
+############################################
+
+# Install rustup and Rust toolchain, sourcing env to update PATH
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable 
+
+ENV PATH="/home/1000/.cargo/bin:${PATH}"
+RUN rustup update stable
 
 # Set working directory
 WORKDIR /app
 
-####################
-# Stable Diffusion #
-####################
+########################################
+# Setup Automatic1111 Stable Diffusion #
+########################################
 
-# Set environment variable for Stable Diffusion release version (default to stable commit)
-ENV SD_RELEASE_VERSION=""
-ENV STABLE_HASH=5ab7f2138c1b816f9b4acb943696d82c8b21d08c
+# Build Argument to override the version of Stable Diffusion
+ARG SD_RELEASE_VERSION=""
+ENV SD_RELEASE_VERSION=$SD_RELEASE_VERSION
+
+# Set Stable Diffusion release version (default to v1.10.1 commit hash)
+ARG STABLE_HASH=82a973c04367123ae98bd9abdf80d9eda9b910e2
+ENV STABLE_HASH=$STABLE_HASH
 
 # Clone Stable Diffusion and checkout specified release or fallback to stable commit
 RUN git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git . \
     && if [ -n "$SD_RELEASE_VERSION" ]; then git checkout "$SD_RELEASE_VERSION"; else git checkout "$STABLE_HASH"; fi
 
-# Pre-install Python dependencies
-RUN python3.12 -m pip install --no-cache-dir torch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 --index-url https://download.pytorch.org/whl/cu129 \
-    && python3.12 -m pip install --no-cache-dir xformers==0.0.28 \
-    && python3.12 -m pip install --no-cache-dir -r requirements.txt
+# Create virtual environment
+RUN python3.10 -m venv /app/venv
 
-# Run as non-root user
-RUN useradd -m -u 1000 appuser
-USER 1000
-WORKDIR /app
+# Install pip, setuptools, wheel in virtual environment
+RUN /app/venv/bin/pip install --upgrade pip setuptools wheel
+
+# Bugfix - ref https://github.com/huggingface/transformers/issues/29576
+RUN sed -i 's/transformers==4.30.2/transformers==4.51.3/' requirements.txt
+
+# Install Python dependencies with Python 3.10
+RUN /app/venv/bin/pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128 
+RUN /app/venv/bin/pip install --no-cache-dir xformers
+RUN /app/venv/bin/pip install --no-cache-dir -r requirements.txt
 
 # Expose port
 EXPOSE 7860
 
-# Run web UI
-CMD ["python3.12", "launch.py", "--listen", "--port", "7860", "--no-download-sd-model"]
+ENV COMMANDLINE_ARGS="--medvram --opt-sdp-attention --xformers --disable-nan-check --api"
+
+# Run web UI using virtual environment's Python
+CMD ["/app/venv/bin/python3.10", "launch.py", "--listen", "--port", "7860"]
+
