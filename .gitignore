@@ -176,3 +176,18 @@ cython_debug/
 # Ignore ignition files
 *.ign
 autorebase.butane
+
+# Ignore Models
+models/Codeformer/*
+models/GFPGAN/*
+models/LDSR/*
+models/Lora/*
+models/RealESRGAN/*
+models/Stable-diffusion/*
+models/VAE/*
+models/VAE-approx/*
+models/hypernetworks/*
+models/karlo/*
+
+# Ignore outputs
+outputs/*
