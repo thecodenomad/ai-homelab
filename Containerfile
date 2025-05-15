@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.8.1-base-ubuntu22.04
+FROM nvidia/cuda:12.8.1-base-ubuntu22.04 as base
 
 # Set non-interactive frontend and timezone
 ENV DEBIAN_FRONTEND=noninteractive
@@ -28,6 +28,8 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+FROM base as base-user
+
 #######################
 # Setup Non-Root User #
 #######################
@@ -42,6 +44,8 @@ ENV HOME=/home/1000
 # Switch to non-root user (UID 1000)
 USER 1000
 
+FROM base-user as rust-base
+
 ############################################
 # Setup Rust Dependencies for Transformers #
 ############################################
@@ -54,6 +58,8 @@ RUN rustup update stable
 
 # Set working directory
 WORKDIR /app
+
+FROM rust-base as sd-webui-base
 
 ########################################
 # Setup Automatic1111 Stable Diffusion #
@@ -85,11 +91,39 @@ RUN /app/venv/bin/pip install --no-cache-dir torch torchvision torchaudio --inde
 RUN /app/venv/bin/pip install --no-cache-dir xformers
 RUN /app/venv/bin/pip install --no-cache-dir -r requirements.txt
 
+FROM sd-webui-base as sd-webui
+
 # Expose port
 EXPOSE 7860
 
-ENV COMMANDLINE_ARGS="--medvram --opt-sdp-attention --xformers --disable-nan-check --api"
+# ENV COMMANDLINE_ARGS="--medvram --opt-sdp-attention --xformers --disable-nan-check --api"
 
 # Run web UI using virtual environment's Python
 CMD ["/app/venv/bin/python3.10", "launch.py", "--listen", "--port", "7860"]
+
+FROM rust-base as comfyui-base
+
+#################
+# Setup ComfyUI #
+#################
+
+# Set ComfyUI release version (default to v0.3.34 commit hash)
+ARG COMFYUI_VERSION="v0.3.34"
+ENV COMFYUI_VERSION=$COMFYUI_VERSION
+
+# Clone Stable Diffusion and checkout specified release or fallback to stable commit
+RUN git clone --depth 1 --branch "$COMFYUI_VERSION" https://github.com/comfyanonymous/ComfyUI.git . 
+
+# Create virtual environment
+RUN python3.10 -m venv /app/venv
+
+# Install pip, setuptools, wheel in virtual environment
+RUN /app/venv/bin/pip install --upgrade pip setuptools wheel
+
+# Install Python dependencies with Python 3.10
+RUN /app/venv/bin/pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128 
+RUN /app/venv/bin/pip install --no-cache-dir xformers
+RUN /app/venv/bin/pip install --no-cache-dir -r requirements.txt
+
+CMD ["python", "main.py", "--listen", "0.0.0.0", "--port", "7860", "--output-directory", "/output_data"]
 

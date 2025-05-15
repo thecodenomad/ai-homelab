@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  webui:
+    build:
+      context: .
+      dockerfile: Containerfile
+    container_name: sd-webui 
+    ports:
+      - "7860:7860"
+    volumes:
+      - ./models:/app/models:Z
+      - ./outputs:/app/outputs:Z
+    environment:
+      - PYTHONUNBUFFERED=1
+      - COMMANDLINE_ARGS=--medvram --opt-sdp-attention --xformers --disable-nan-check --api
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+        limits:
+          memory: 12g
+  comfyui:
+    build:
+      context: .
+      dockerfile: Containerfile
+    container_name: sd-comfyui
+    ports:
+      - "7860:7860"
+    volumes:
+      - ./models/Stable-diffusion:/app/models/diffusion_models:Z
+      - ./models/VAE:/app/models/vae:Z
+      - ./models/VAE-approx:/app/models/vae_approx:Z
+      - ./models/Lora:/app/models/loras:Z
+      - ./models/hypernetworks:/app/models/hypernetworks:Z
+      - ./outputs:/app/outputs:Z
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: "/app/venv/bin/python main.py"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+        limits:
+          memory: 12g    
+
