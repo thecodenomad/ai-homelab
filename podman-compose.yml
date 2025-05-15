@@ -5,7 +5,8 @@ services:
     build:
       context: .
       dockerfile: Containerfile
-    container_name: sd-webui 
+      target: sd-webui 
+    #container_name: sd-webui 
     ports:
       - "7860:7860"
     volumes:
@@ -21,25 +22,25 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-        limits:
-          memory: 12g
+#        limits:
+#          memory: 12g
   comfyui:
     build:
       context: .
       dockerfile: Containerfile
-    container_name: sd-comfyui
+      target: comfyui
+    #container_name: comfyui
     ports:
-      - "7860:7860"
+      - "7861:7861"
     volumes:
-      - ./models/Stable-diffusion:/app/models/diffusion_models:Z
+      - ./models/Stable-diffusion:/app/models/checkpoints:Z
       - ./models/VAE:/app/models/vae:Z
       - ./models/VAE-approx:/app/models/vae_approx:Z
       - ./models/Lora:/app/models/loras:Z
       - ./models/hypernetworks:/app/models/hypernetworks:Z
-      - ./outputs:/app/outputs:Z
+      - ./outputs:/output_data:Z
     environment:
       - PYTHONUNBUFFERED=1
-    command: "/app/venv/bin/python main.py"
     deploy:
       resources:
         reservations:
@@ -47,6 +48,6 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-        limits:
-          memory: 12g    
+#        limits:
+#          memory: 12g    
 

@@ -35,8 +35,8 @@ FROM base as base-user
 #######################
 
 # Create working directory and home directory for UID 1000
-RUN mkdir -p /app /home/1000 \
-    && chown 1000:1000 /app /home/1000
+RUN mkdir -p /app /home/1000 /output_data \
+    && chown 1000:1000 /app /home/1000 /output_data 
 
 # Set home directory for UID 1000
 ENV HOME=/home/1000
@@ -125,5 +125,7 @@ RUN /app/venv/bin/pip install --no-cache-dir torch torchvision torchaudio --inde
 RUN /app/venv/bin/pip install --no-cache-dir xformers
 RUN /app/venv/bin/pip install --no-cache-dir -r requirements.txt
 
-CMD ["python", "main.py", "--listen", "0.0.0.0", "--port", "7860", "--output-directory", "/output_data"]
+FROM comfyui-base as comfyui
+
+CMD ["/app/venv/bin/python3.10", "main.py", "--listen", "0.0.0.0", "--port", "7861"]
 
