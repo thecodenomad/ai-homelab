@@ -178,16 +178,28 @@ cython_debug/
 autorebase.butane
 
 # Ignore Models
-models/Codeformer/*
-models/GFPGAN/*
-models/LDSR/*
-models/Lora/*
-models/RealESRGAN/*
-models/Stable-diffusion/*
-models/VAE/*
-models/VAE-approx/*
-models/hypernetworks/*
-models/karlo/*
+mounts/models/Codeformer/*
+mounts/models/ControlNet/*
+mounts/models/GFPGAN/*
+mounts/models/LDSR/*
+mounts/models/Lora/*
+mounts/models/RealESRGAN/*
+mounts/models/Stable-diffusion/*
+mounts/models/VAE/*
+mounts/models/VAE-approx/*
+mounts/models/clip/*
+mounts/models/clip_vision/*
+mounts/models/comyui/configs/*
+mounts/models/comyui/diffusion_models/*
+mounts/models/comyui/lora/*
+mounts/models/comyui/unet/*
+mounts/models/comyui/upscale_models/*
+mounts/models/embeddings/*
+mounts/models/hypernetworks/*
+mounts/models/karlo/*
+
+# Ignore any custom nodes from ComfyUI
+mounts/custom_nodes/*
 
 # Ignore outputs
 outputs/*

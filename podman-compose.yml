@@ -1,20 +1,38 @@
 version: '3.8'
 
 services:
-  webui:
+
+#######################
+# Experiement with AI #
+#######################
+
+  localai:
+    image: localai/localai:latest-gpu-nvidia-cuda-12-extras
+    container_name: localai
+    ports:
+      - "8080:8080"
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    volumes:
+      - ./mounts/localai/models:/build/models:Z
+
+####################
+# Stable Diffusion #
+####################
+
+  sd-webui:
     build:
       context: .
       dockerfile: Containerfile
       target: sd-webui 
-    #container_name: sd-webui 
     ports:
       - "7860:7860"
     volumes:
-      - ./models:/app/models:Z
+      - ./mounts/models:/app/models:Z
       - ./outputs:/app/outputs:Z
     environment:
       - PYTHONUNBUFFERED=1
-      - COMMANDLINE_ARGS=--medvram --opt-sdp-attention --xformers --disable-nan-check --api
+      - COMMANDLINE_ARGS=--opt-sdp-attention --xformers --api
     deploy:
       resources:
         reservations:
@@ -24,20 +42,24 @@ services:
               capabilities: [gpu]
 #        limits:
 #          memory: 12g
+
+###########
+# ComfyUI #
+###########
+
   comfyui:
     build:
       context: .
       dockerfile: Containerfile
       target: comfyui
-    #container_name: comfyui
     ports:
       - "7861:7861"
     volumes:
-      - ./models/Stable-diffusion:/app/models/checkpoints:Z
-      - ./models/VAE:/app/models/vae:Z
-      - ./models/VAE-approx:/app/models/vae_approx:Z
-      - ./models/Lora:/app/models/loras:Z
-      - ./models/hypernetworks:/app/models/hypernetworks:Z
+      - ./mounts/models/Stable-diffusion:/app/models/checkpoints:Z
+      - ./mounts/models/VAE:/app/models/vae:Z
+      - ./mounts/models/VAE-approx:/app/models/vae_approx:Z
+      - ./mounts/models/Lora:/app/models/loras:Z
+      - ./mounts/models/hypernetworks:/app/models/hypernetworks:Z
       - ./outputs:/output_data:Z
     environment:
       - PYTHONUNBUFFERED=1
@@ -48,6 +70,33 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+ #       limits:
+ #         memory: 12g    
+
+####################
+# Music Generation #
+####################
+
+  ace:
+    build:
+      context: .
+      dockerfile: Containerfile
+      target: ace
+    ports:
+      - "7862:7862"
+    volumes:
+      - ./mounts/ace/checkpoints:/app/checkpoints:Z
+      - ./outputs:/app/outputs:Z
+      - ./logs:/app/logs:Z
+    environment:
+      - PYTHONUNBUFFERED=1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
 #        limits:
-#          memory: 12g    
+#          memory: 12g
 
