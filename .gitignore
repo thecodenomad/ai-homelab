@@ -197,6 +197,8 @@ mounts/models/comyui/upscale_models/*
 mounts/models/embeddings/*
 mounts/models/hypernetworks/*
 mounts/models/karlo/*
+mounts/ollama-data/*
+mounts/ollama/*
 
 # Ignore any custom nodes from ComfyUI
 mounts/custom_nodes/*

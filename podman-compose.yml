@@ -16,18 +16,38 @@ services:
 #    volumes:
 #      - ./mounts/localai/models:/build/models:Z
 
-########
-# Base #
-########
+##########
+# Ollama #
+##########
 
-  # The base image used for testing out python dependences, etc
-#  ai-base:
-#    build:
-#      context: .
-#      dockerfile: podman/Containerfile
-#      target: base
-#    image: localhost/ai-base:latest
-#    pull_policy: never
+# Just Ollama for API support, no WebUI
+#  ollama:
+#    image: ollama/ollama:latest
+#    ports:
+#      - "8080:11434"
+#    volumes:
+#      - ./mounts/ollama:/root/.ollama:Z
+#    deploy:
+#      resources:
+#        reservations:
+#          devices:
+#            - driver: nvidia
+#              count: 1
+#              capabilities: [gpu]
+#
+#  ollama:
+#    image: ghcr.io/open-webui/open-webui:ollama
+#    ports: "8080:8080" 
+#    volumes:
+#      - ./mounts/ollama:/root/.ollama:Z
+#      - ./mounts/ollama-data:/app/backend/data:Z
+#    deploy:
+#      resources:
+#        reservations:
+#          devices:
+#            - driver: nvidia
+#              count: 1
+#              capabilities: [gpu]    
 
 ####################
 # Stable Diffusion #
