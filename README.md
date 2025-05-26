@@ -64,4 +64,3 @@ Part 2 repo structure:
 The updated folder structure will help facilitate the bind mounting into the service(s) in Part 3
 
 NOTE: Going forward all new example files used in posts will be placed in the ./examples/ folder and all helper scripts will be placed in the ./scripts/ folder.
-
