@@ -6,25 +6,40 @@ services:
 # Experiement with AI #
 #######################
 
-  localai:
-    image: localai/localai:latest-gpu-nvidia-cuda-12-extras
-    container_name: localai
-    ports:
-      - "8080:8080"
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=all
-    volumes:
-      - ./mounts/localai/models:/build/models:Z
+#  localai:
+#    image: localai/localai:latest-gpu-nvidia-cuda-12-extras
+#    container_name: localai
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      - NVIDIA_VISIBLE_DEVICES=all
+#    volumes:
+#      - ./mounts/localai/models:/build/models:Z
+
+########
+# Base #
+########
+
+  # The base image used for testing out python dependences, etc
+#  ai-base:
+#    build:
+#      context: .
+#      dockerfile: podman/Containerfile
+#      target: base
+#    image: localhost/ai-base:latest
+#    pull_policy: never
 
 ####################
 # Stable Diffusion #
 ####################
 
-  sd-webui:
+  webui:
     build:
       context: .
-      dockerfile: Containerfile
-      target: sd-webui 
+      dockerfile: podman/Containerfile
+      target: webui
+      pull_policy: never
+    image: webui:latest
     ports:
       - "7860:7860"
     volumes:
@@ -50,16 +65,20 @@ services:
   comfyui:
     build:
       context: .
-      dockerfile: Containerfile
-      target: comfyui
+      dockerfile: podman/Containerfile
+      target: comfyui 
+      pull_policy: never
+    image: comfyui:latest
     ports:
       - "7861:7861"
     volumes:
-      - ./mounts/models/Stable-diffusion:/app/models/checkpoints:Z
-      - ./mounts/models/VAE:/app/models/vae:Z
-      - ./mounts/models/VAE-approx:/app/models/vae_approx:Z
-      - ./mounts/models/Lora:/app/models/loras:Z
-      - ./mounts/models/hypernetworks:/app/models/hypernetworks:Z
+#      - ./mounts/models/Stable-diffusion:/app/models/checkpoints:Z
+#      - ./mounts/models/VAE:/app/models/vae:Z
+#      - ./mounts/models/VAE-approx:/app/models/vae_approx:Z
+#      - ./mounts/models/Lora:/app/models/loras:Z
+#      - ./mounts/models/hypernetworks:/app/models/hypernetworks:Z
+      - ./mounts/models:/opt/models:Z
+      - ./mounts/custom_nodes:/opt/custom_nodes:Z
       - ./outputs:/output_data:Z
     environment:
       - PYTHONUNBUFFERED=1
@@ -80,8 +99,10 @@ services:
   ace:
     build:
       context: .
-      dockerfile: Containerfile
-      target: ace
+      dockerfile: podman/Containerfile
+      target: ace 
+      pull_policy: never
+    image: ace:latest
     ports:
       - "7862:7862"
     volumes:
