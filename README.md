@@ -48,8 +48,19 @@ as well as serving it. Boot your homelab server into CoreOS, and then run this s
   \ --- /
 ```
 
-### Part 2 
+### Part 2
+
+Part 2 repo structure:
+
+├── Containerfile
+├── examples
+│   ├── example-autorebase.butane
+│   └── readme.md
+├── models
+├── outputs
+└── scripts
+    └── create_ignition.sh
+
+The updated folder structure will help facilitate the bind mounting into the service(s) in Part 3
 
 NOTE: Going forward all new example files used in posts will be placed in the ./examples/ folder and all helper scripts will be placed in the ./scripts/ folder.
-
-
