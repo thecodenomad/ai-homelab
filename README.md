@@ -77,7 +77,7 @@ Part 3 repo structure:
 │   ├── localai
 │   │   └── models
 │   └── models
-│       ├── ... 
+│       ├── ...
 │       ├── Stable-diffusion
 │       │   └── v1-5-pruned-emaonly.safetensors
 │       ├── comfyui
@@ -86,7 +86,7 @@ Part 3 repo structure:
 │       │   ├── lora
 │       │   ├── unet
 │       │   └── upscale_models
-│       └── ... 
+│       └── ...
 ├── outputs
 ├── podman
 │   ├── Containerfile
@@ -95,7 +95,7 @@ Part 3 repo structure:
 │       ├── comfyui.requirements.lock
 │       └── sd-webui.requirements.lock
 ├── podman-compose.yml
-└── ... 
+└── ...
 
 The structure was updated to facilitate better bind mounts for multiple services, using the `extra_model_paths.yaml` for comfyui to help share models between ComfyUI and Stable Diffusion WebUI.
 
@@ -103,8 +103,7 @@ The structure was updated to facilitate better bind mounts for multiple services
 #### Startup All services with:
 
 ```
-podman-compose up 
+podman-compose up
 ```
 
 This should build a base image `dependency-base` which is useful to explore similar AI tools. Stable Diffusion WebUI, ComfyUI, and ACE-Step will spin up on ports 7860, 7861, 7862 on the host.
-
