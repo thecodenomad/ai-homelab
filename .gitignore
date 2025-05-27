@@ -180,6 +180,7 @@ autorebase.butane
 # Ignore Models
 mounts/models/Codeformer/*
 mounts/models/ControlNet/*
+mounts/models/ESRGAN/*
 mounts/models/GFPGAN/*
 mounts/models/LDSR/*
 mounts/models/Lora/*
@@ -199,6 +200,9 @@ mounts/models/hypernetworks/*
 mounts/models/karlo/*
 mounts/ollama-data/*
 mounts/ollama/*
+
+mounts/models/comfyui/diffusion_models/*
+mounts/models/comfyui/lora/*
 
 # Ignore any custom nodes from ComfyUI
 mounts/custom_nodes/*

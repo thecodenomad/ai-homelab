@@ -30,4 +30,5 @@ comfyui:
                  models/comfyui/diffusion_models
                  models/comfyui/unet
     custom_nodes: custom_nodes
+    text_encodings: models/comfyui/text_encodings
 

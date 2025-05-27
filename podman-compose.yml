@@ -99,7 +99,7 @@ services:
 #      - ./mounts/models/hypernetworks:/app/models/hypernetworks:Z
       - ./mounts/models:/opt/models:Z
       - ./mounts/custom_nodes:/opt/custom_nodes:Z
-      - ./outputs:/output_data:Z
+      - ./outputs/comfyui:/app/output:Z
     environment:
       - PYTHONUNBUFFERED=1
     deploy:
