@@ -1,0 +1,34 @@
+# Mapping to reduce as much duplication as possible between
+# Stable Diffusion and ComfyUI 
+sd:
+    base_path: /opt 
+    checkpoints: models/Stable-diffusion
+    configs: models/Stable-diffusion 
+    vae: models/VAE
+    loras: models/Lora
+    upscale_models: models/RealESRGAN
+    embeddings: models/embeddings
+    hypernetworks: models/hypernetworks
+    controlnet: models/ControlNet
+
+# Structure used to facilitate custom nodes
+comfyui:
+    is_default: true
+    base_path: /opt
+    checkpoints: models/Stable-diffusion
+    configs: models/comfyui/configs
+    vae: models/VAE
+    # Avoid conflicts if SD requires Lora vs LyCORIS
+    loras: models/comfyui/lora
+    upscale_models: models/comfyui/upscale_models
+    embeddings: models/embeddings
+    controlnet: models/ControlNet
+    clip: models/clip
+    clip_vision: models/clip_vision
+    # Only different from checkpoints if custom nodes require these
+    diffusion_models: |
+                 models/comfyui/diffusion_models
+                 models/comfyui/unet
+    custom_nodes: custom_nodes
+    text_encodings: models/comfyui/text_encodings
+
