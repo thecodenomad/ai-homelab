@@ -64,3 +64,46 @@ Part 2 repo structure:
 The updated folder structure will help facilitate the bind mounting into the service(s) in Part 3
 
 NOTE: Going forward all new example files used in posts will be placed in the ./examples/ folder and all helper scripts will be placed in the ./scripts/ folder.
+
+### Part 3
+
+Part 3 repo structure:
+
+├── extra_model_paths.yaml
+├── mounts
+│   ├── ace
+│   │   └── checkpoints
+│   ├── custom_nodes
+│   ├── localai
+│   │   └── models
+│   └── models
+│       ├── ...
+│       ├── Stable-diffusion
+│       │   └── v1-5-pruned-emaonly.safetensors
+│       ├── comfyui
+│       │   ├── configs
+│       │   ├── diffusion_models
+│       │   ├── lora
+│       │   ├── unet
+│       │   └── upscale_models
+│       └── ...
+├── outputs
+├── podman
+│   ├── Containerfile
+│   └── deps
+│       ├── ace.requirements.lock
+│       ├── comfyui.requirements.lock
+│       └── sd-webui.requirements.lock
+├── podman-compose.yml
+└── ...
+
+The structure was updated to facilitate better bind mounts for multiple services, using the `extra_model_paths.yaml` for comfyui to help share models between ComfyUI and Stable Diffusion WebUI.
+
+
+#### Startup All services with:
+
+```
+podman-compose up
+```
+
+This should build a base image `dependency-base` which is useful to explore similar AI tools. Stable Diffusion WebUI, ComfyUI, and ACE-Step will spin up on ports 7860, 7861, 7862 on the host.
