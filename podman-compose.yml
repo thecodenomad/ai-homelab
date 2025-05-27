@@ -35,19 +35,19 @@ services:
 #              count: 1
 #              capabilities: [gpu]
 #
-#  ollama:
-#    image: ghcr.io/open-webui/open-webui:ollama
-#    ports: "8080:8080" 
-#    volumes:
-#      - ./mounts/ollama:/root/.ollama:Z
-#      - ./mounts/ollama-data:/app/backend/data:Z
-#    deploy:
-#      resources:
-#        reservations:
-#          devices:
-#            - driver: nvidia
-#              count: 1
-#              capabilities: [gpu]    
+  ollama:
+    image: ghcr.io/open-webui/open-webui:ollama
+    ports: "8080:8080" 
+    volumes:
+      - ./mounts/ollama:/root/.ollama:Z
+      - ./mounts/ollama-data:/app/backend/data:Z
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]    
 
 ####################
 # Stable Diffusion #
