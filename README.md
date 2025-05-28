@@ -52,6 +52,7 @@ as well as serving it. Boot your homelab server into CoreOS, and then run this s
 
 Part 2 repo structure:
 
+```
 ├── Containerfile
 ├── examples
 │   ├── example-autorebase.butane
@@ -60,6 +61,7 @@ Part 2 repo structure:
 ├── outputs
 └── scripts
     └── create_ignition.sh
+```
 
 The updated folder structure will help facilitate the bind mounting into the service(s) in Part 3
 
@@ -69,6 +71,7 @@ NOTE: Going forward all new example files used in posts will be placed in the ./
 
 Part 3 repo structure:
 
+```
 ├── extra_model_paths.yaml
 ├── mounts
 │   ├── ace
@@ -96,6 +99,7 @@ Part 3 repo structure:
 │       └── sd-webui.requirements.lock
 ├── podman-compose.yml
 └── ...
+```
 
 The structure was updated to facilitate better bind mounts for multiple services, using the `extra_model_paths.yaml` for comfyui to help share models between ComfyUI and Stable Diffusion WebUI.
 
