@@ -21,20 +21,20 @@ services:
 ##########
 
 # Just Ollama for API support, no WebUI
-#  ollama:
-#    image: ollama/ollama:latest
-#    ports:
-#      - "8080:11434"
-#    volumes:
-#      - ./mounts/ollama:/root/.ollama:Z
-#    deploy:
-#      resources:
-#        reservations:
-#          devices:
-#            - driver: nvidia
-#              count: 1
-#              capabilities: [gpu]
-#
+  ollama-api:
+    image: ollama/ollama:latest
+    ports:
+      - "8080:11434"
+    volumes:
+      - ./mounts/ollama:/root/.ollama:Z
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
   ollama:
     image: ghcr.io/open-webui/open-webui:ollama
     ports: "8080:8080" 
@@ -67,7 +67,7 @@ services:
       - ./outputs:/app/outputs:Z
     environment:
       - PYTHONUNBUFFERED=1
-      - COMMANDLINE_ARGS=--opt-sdp-attention --xformers --api
+      - COMMANDLINE_ARGS=--opt-sdp-attention --xformers --api --disable-safe-unpickle --enable-insecure-extension-access
     deploy:
       resources:
         reservations:

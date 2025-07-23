@@ -189,6 +189,7 @@ mounts/models/Stable-diffusion/*
 mounts/models/VAE/*
 mounts/models/VAE-approx/*
 mounts/models/clip/*
+mounts/models/CLIP/*
 mounts/models/clip_vision/*
 mounts/models/comyui/configs/*
 mounts/models/comyui/diffusion_models/*
