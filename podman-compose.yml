@@ -21,12 +21,19 @@ services:
 ##########
 
 # Just Ollama for API support, no WebUI
-  ollama-api:
+#    image: ollama/ollama:latest
+  ollama:
     image: ollama/ollama:latest
     ports:
-      - "8080:11434"
+      - "11434:11434"
     volumes:
       - ./mounts/ollama:/root/.ollama:Z
+    environment:
+      - OLLAMA_FLASH_ATTENTION=1    # Efficiency Flag
+      - OLLAMA_KV_CACHE_TYPE=q8_0   # Quantize the Context Memory
+      - OLLAMA_NUM_CTX=8192         # Context Window Default
+      - OLLAMA_MAX_LOADED_MODELS=1  # Only one needed at a time
+    restart: unless-stopped
     deploy:
       resources:
         reservations:
@@ -35,12 +42,19 @@ services:
               count: 1
               capabilities: [gpu]
 
-  ollama:
-    image: ghcr.io/open-webui/open-webui:ollama
-    ports: "8080:8080" 
+  openweb:
+    image: ghcr.io/open-webui/open-webui:latest
+    ports: 
+      - "8080:8080"
     volumes:
-      - ./mounts/ollama:/root/.ollama:Z
       - ./mounts/ollama-data:/app/backend/data:Z
+    environment:
+      - 'OLLAMA_BASE_URL=http://ollama:11434'
+      - 'WEBUI_SECRET_KEY='
+    depends_on:
+      - ollama
+#      - webui
+    restart: unless-stopped
     deploy:
       resources:
         reservations:
@@ -111,6 +125,32 @@ services:
               capabilities: [gpu]
  #       limits:
  #         memory: 12g    
+
+####################
+# Voice Generation #
+####################
+
+  openaudio:
+    build:
+      context: .
+      dockerfile: podman/Containerfile.openaudio
+      pull_policy: never
+    image: fish-speech:latest 
+    volumes:
+      - ./mounts/openaudio/checkpoints:/opt/fish-speech/checkpoints:Z
+      - ./mounts/openaudio/references:/opt/fish-speech/references:Z
+    ports:
+      - "8081:7860"
+    environment:
+      - COMPILE=1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1 
+              capabilities: [gpu]
+    restart: unless-stopped
 
 ####################
 # Music Generation #

@@ -1,0 +1,20 @@
+FROM fishaudio/fish-speech:latest
+
+RUN mkdir -p /opt/fish-speech/checkpoints
+RUN mkdir -p /opt/fish-speech/references
+
+WORKDIR /opt/fish-speech
+
+# Start the Web Server
+ENTRYPOINT ["python", "-m", "tools.run_webui", \
+            "--llama-checkpoint-path", "checkpoints/openaudio-s1-mini", \
+            "--decoder-checkpoint-path", "checkpoints/openaudio-s1-mini/codec.pth", \
+            "--decoder-config-name", "modded_dac_vq"]
+
+# API Server
+#ENTRYPOINT ["python", "-m", "tools.api_server", \
+#            "--listen 0.0.0.0:7860", \
+#            "--llama-checkpoint-path", "checkpoints/openaudio-s1-mini", \
+#            "--decoder-checkpoint-path", "checkpoints/openaudio-s1-mini/codec.pth", \
+#            "--decoder-config-name", "modded_dac_vq"]
+

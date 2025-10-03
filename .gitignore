@@ -201,6 +201,7 @@ mounts/models/hypernetworks/*
 mounts/models/karlo/*
 mounts/ollama-data/*
 mounts/ollama/*
+mounts/openaudio/*
 
 mounts/models/comfyui/diffusion_models/*
 mounts/models/comfyui/lora/*
